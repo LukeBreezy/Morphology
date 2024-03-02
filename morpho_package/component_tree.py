@@ -17,7 +17,7 @@ class ComponentTree:
 
         self.domain = Box(Point(0, 0), Point(self.height - 1, self.width - 1))
         self.pixel_indexer = PixelIndexer(self.domain)
-        self.sorted_pixels = self.sortPixels('desc')
+        self.sorted_pixels = self.sortPixels()
 
         self.x_coord, self.y_coord = np.meshgrid(np.arange(self.width), np.arange(self.height))
 
@@ -75,25 +75,6 @@ class ComponentTree:
                             self.zpar[root] = p_index
 
 
-    def canonize(self):
-        self.canonical_pixels = []
-
-        for p in np.flip(self.sorted_pixels):
-            p_parent = self.parent[p]
-            p_grand_parent = self.parent[p_parent]
-
-            p_point = self.pixel_indexer.index_to_coord(p)
-            p_parent_point = self.pixel_indexer.index_to_coord(p_parent)
-            p_grand_parent_point = self.pixel_indexer.index_to_coord(p_grand_parent)
-
-
-            if p == p_parent or self.image[p_point.row, p_point.col] != self.image[p_parent_point.row, p_parent_point.col]:
-                self.canonical_pixels.append(p)
-
-            if self.image[p_grand_parent_point.row, p_grand_parent_point.col] == self.image[p_parent_point.row, p_parent_point.col]:
-                self.parent[p] = p_grand_parent
-
-
     def showParents(self):
         ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -119,6 +100,19 @@ class ComponentTree:
                     horizontalalignment='center',
                     verticalalignment='center_baseline'
                 )
+
+
+class UpperLevelSets(ComponentTree):
+        
+    def sortPixels(self):
+        return super().sortPixels('desc')
+
+
+class LowerLevelSets(ComponentTree):
+    
+    def sortPixels(self):
+        return super().sortPixels('asc')
+
 
 
 
