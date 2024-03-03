@@ -8,7 +8,7 @@ from .pixel_indexer import PixelIndexer
 
 
 class ComponentTree:
-    def __init__(self, f, adjacency=Adjacency4()):
+    def __init__(self, f, adjacency):
         self.image = f
         self.adjacency = adjacency
 
@@ -19,11 +19,10 @@ class ComponentTree:
         self.pixel_indexer = PixelIndexer(self.domain)
         self.sorted_pixels = self.sortPixels()
 
-        self.x_coord, self.y_coord = np.meshgrid(np.arange(self.width), np.arange(self.height))
+        # self.x_coord, self.y_coord = np.meshgrid(np.arange(self.width), np.arange(self.height))
 
-        self.parent = np.arange(self.sorted_pixels.shape[0])
-        self.zpar = np.full(self.sorted_pixels.shape, None)
-        self.canonical_pixels = []
+        # self.parent = np.arange(self.sorted_pixels.shape[0])
+        # self.zpar = np.full(self.sorted_pixels.shape, None)
 
 
     def sortPixels(self, sort='asc'):
@@ -56,10 +55,14 @@ class ComponentTree:
 
 
     def computeTree(self):
+        self.parent = np.full(self.sorted_pixels.shape, None)
         self.zpar = np.full(self.sorted_pixels.shape, None)
-        
+
+        # print(f'parent: {self.parent}')
+        # print(f'zpar: {self.zpar}')
+
         for p_index in self.sorted_pixels:
-            self.zpar[p_index] = p_index
+            self.parent[p_index] = self.zpar[p_index] = p_index
 
             p_point = self.pixel_indexer.index_to_coord(p_index)
 
@@ -112,7 +115,6 @@ class LowerLevelSets(ComponentTree):
     
     def sortPixels(self):
         return super().sortPixels('asc')
-
 
 
 

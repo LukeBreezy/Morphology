@@ -4,7 +4,7 @@ class Node:
         self.level = level                                      # Level / Intensity
         self.parent = self if parent == None else parent        # Parent Node
         self.rep = rep                                          # Representant
-        self.cnps = []                                          # Compact Node Pixels
+        self.cnps = [rep]                                       # Compact Node Pixels
         self.childrens = {}                                     # Children Nodes
 
 
@@ -29,4 +29,4 @@ class Node:
     
 
     def getInfo(self):
-        return f"Representant: {self.rep} \nParent: {self.parent.rep} \nCNPs: {self.cnps} \nChildren Nodes: {list(self.childrens.keys())}"
+        return f"Representant: {self.rep} \nLevel: {self.level} \nParent: {self.parent.rep} \nCNPs: {self.cnps} \nChildren Nodes: {list(self.childrens.keys())}"
