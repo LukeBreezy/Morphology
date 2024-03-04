@@ -5,6 +5,7 @@ from PrettyPrint import PrettyPrintTree
 from .adjacency import Adjacency4
 from .component_tree import ComponentTree, UpperLevelSets, LowerLevelSets
 from .node import Node
+from .node_attributes import ComputeAttributes
 
 class CompactTree(ComponentTree):
 
@@ -12,6 +13,7 @@ class CompactTree(ComponentTree):
         super().__init__(f, adjacency)
         self.computeTree()
         self.canonize()
+        ComputeAttributes(self.nodes)
 
 
     def canonize(self):
@@ -40,16 +42,9 @@ class CompactTree(ComponentTree):
         parent = self.parent[canonical_index]
 
         if canonical_index == parent:
-            self.nodes[canonical_index] = Node(
-                level,
-                canonical_index
-            )
+            self.nodes[canonical_index] = Node(level, canonical_index)
         else:
-            self.nodes[canonical_index] = Node(
-                level,
-                canonical_index,
-                self.nodes[parent]
-            )
+            self.nodes[canonical_index] = Node(level, canonical_index, self.nodes[parent])
             self.nodes[parent].addChildren(self.nodes[canonical_index])
 
 
@@ -61,8 +56,8 @@ class CompactTree(ComponentTree):
             lambda node: node.childrens.values(),
             lambda node: node.getInfo()
         )
-
         pretty_tree(root_node)
+
 
 class MaxTree(CompactTree, UpperLevelSets):
     pass

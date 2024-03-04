@@ -5,3 +5,4 @@ from .pixel_indexer import PixelIndexer
 from .component_tree import ComponentTree, UpperLevelSets, LowerLevelSets, showParents
 from .compact_tree import CompactTree, MaxTree, MinTree
 from .node import Node
+from .node_attributes.attribute_set import ComputeAttributes

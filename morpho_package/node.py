@@ -1,11 +1,13 @@
 class Node:
 
     def __init__(self, level, rep, parent=None):
-        self.level = level                                      # Level / Intensity
         self.parent = self if parent == None else parent        # Parent Node
         self.rep = rep                                          # Representant
-        self.cnps = [rep]                                       # Compact Node Pixels
         self.childrens = {}                                     # Children Nodes
+
+        self.level = level                                      # Level / Intensity
+        self.cnps = [rep]                                       # Compact Node Pixels
+        self.attributes = {}                                    # Node Attributes
 
 
     def addCnp(self, pixel):
@@ -24,9 +26,20 @@ class Node:
         return self.childrens[rep]
 
 
-    def getChildrens(self):
-        return self.childrens
-    
-
     def getInfo(self):
-        return f"Representant: {self.rep} \nLevel: {self.level} \nParent: {self.parent.rep} \nCNPs: {self.cnps} \nChildren Nodes: {list(self.childrens.keys())}"
+        return (
+            f"Representant: {self.rep}\n"
+            f"Level: {self.level}\n"
+            f"Parent: {self.parent.rep}\n"
+            f"CNPs: {self.cnps}\n"
+            f"Children Nodes: {list(self.childrens.keys())}\n"
+            f"Attributes: {self.attributes}"
+        )
+
+
+    def isRoot(self):
+        return self.rep == self.parent.rep
+
+
+    def isLeaf(self):
+        return not bool(self.childrens)
