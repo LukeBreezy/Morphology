@@ -64,11 +64,11 @@ class ComponentTree:
         for p_index in self.sorted_pixels:
             self.parent[p_index] = self.zpar[p_index] = p_index
 
-            p_point = self.pixel_indexer.index_to_coord(p_index)
+            p_point = self.pixel_indexer.indexToCoord(p_index)
 
             for q_point in self.adjacency.neighbours(p_point):
                 if self.domain.contains(q_point):
-                    q_index = self.pixel_indexer.coord_to_index(q_point)
+                    q_index = self.pixel_indexer.coordToIndex(q_point)
                     
                     if self.zpar[q_index] != None:
                         root = self.findRoot(q_index)
@@ -95,7 +95,7 @@ class ComponentTree:
 
         for i in range(self.height):
             for j in range(self.width):
-                coord = self.pixel_indexer.index_to_coord(self.parent.reshape(self.image.shape)[i, j])
+                coord = self.pixel_indexer.indexToCoord(self.parent.reshape(self.image.shape)[i, j])
                 ax1.text(
                     j, i,
                     f'{imgABC[i, j]} -> {imgABC[coord.row, coord.col]}',
@@ -143,7 +143,7 @@ def showParents(image, sorted_pixels, parent):
                     Point(0, 0),
                     Point(height - 1, width - 1)
                 )
-            ).index_to_coord(parent.reshape(image.shape)[i, j])
+            ).indexToCoord(parent.reshape(image.shape)[i, j])
 
             ax1.text(
                 j, i,

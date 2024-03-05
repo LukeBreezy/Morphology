@@ -6,10 +6,10 @@ class PixelIndexer:
     def __init__(self, domain: Box):
         self.domain = domain
 
-    def coord_to_index(self, point: Point):
+    def coordToIndex(self, point: Point):
         q = point - self.domain.top_left
         return self.domain.width() * q.row + q.col
 
-    def index_to_coord(self, index):
+    def indexToCoord(self, index):
         q = Point(index // (self.domain.width()), index % (self.domain.width()))
         return q + self.domain.top_left

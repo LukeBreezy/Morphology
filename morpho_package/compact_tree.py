@@ -23,9 +23,9 @@ class CompactTree(ComponentTree):
             p_parent = self.parent[p]
             p_grand_parent = self.parent[p_parent]
 
-            p_point = self.pixel_indexer.index_to_coord(p)
-            p_parent_point = self.pixel_indexer.index_to_coord(p_parent)
-            p_grand_parent_point = self.pixel_indexer.index_to_coord(p_grand_parent)
+            p_point = self.pixel_indexer.indexToCoord(p)
+            p_parent_point = self.pixel_indexer.indexToCoord(p_parent)
+            p_grand_parent_point = self.pixel_indexer.indexToCoord(p_grand_parent)
 
             if self.image[p_grand_parent_point.row, p_grand_parent_point.col] == self.image[p_parent_point.row, p_parent_point.col]:
                 p_parent = self.parent[p] = p_grand_parent
@@ -37,7 +37,7 @@ class CompactTree(ComponentTree):
 
 
     def generateNode(self, canonical_index):
-        c_point = self.pixel_indexer.index_to_coord(canonical_index)
+        c_point = self.pixel_indexer.indexToCoord(canonical_index)
         level = self.image[c_point.row, c_point.col]
         parent = self.parent[canonical_index]
 
