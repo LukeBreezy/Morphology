@@ -1,3 +1,6 @@
+from .node_attributes import Attributes
+
+
 class Node:
 
     def __init__(self, level, rep, parent=None):
@@ -7,7 +10,7 @@ class Node:
 
         self.level = level                                      # Level / Intensity
         self.cnps = [rep]                                       # Compact Node Pixels
-        self.attributes = {}                                    # Node Attributes
+        self.attributes = Attributes()                          # Node Attributes
 
 
     def addCnp(self, pixel):
@@ -26,6 +29,18 @@ class Node:
         return self.childrens[rep]
 
 
+    def isRoot(self):
+        return self.rep == self.parent.rep
+
+
+    def isLeaf(self):
+        return not bool(self.childrens)
+    
+
+    def computeAttributes(self):
+        self.attributes.computeAttributes(self)
+
+
     def getInfo(self):
         return (
             f"Representant: {self.rep}\n"
@@ -33,13 +48,5 @@ class Node:
             f"Parent: {self.parent.rep}\n"
             f"CNPs: {self.cnps}\n"
             f"Children Nodes: {list(self.childrens.keys())}\n"
-            f"Attributes: {self.attributes}"
+            f"{self.attributes}"
         )
-
-
-    def isRoot(self):
-        return self.rep == self.parent.rep
-
-
-    def isLeaf(self):
-        return not bool(self.childrens)

@@ -1,1 +1,2 @@
-from .attribute_set import ComputeAttributes
+from .compute_attributes import ComputeAttributes
+from .attributes import Attributes

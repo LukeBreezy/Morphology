@@ -30,7 +30,7 @@ class ComponentTree:
         sorted_pixels = np.argsort(vector)
         
         if sort == 'desc':
-            sorted_pixels = np.flip(sorted_pixels, )
+            sorted_pixels = np.flip(sorted_pixels)
 
         return sorted_pixels
 

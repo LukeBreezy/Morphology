@@ -1,56 +1,35 @@
-from ..node import Node
+class Attributes:
 
-class Attribute:
-
-    def __init__(self, attr_name, node: Node):
-        self.attr_name = attr_name
-        self.node = node
-        self.computeAttribute()
+    def __init__(self):
+        self.area = 0
+        self.volume = 0
 
 
-    def computeAttribute(self):
-        if not self.hasAttribute(self.node):
-            self.node.attributes[self.attr_name] = 0
+    def computeAttributes(self, node):
+        self.computeArea(node)
+        self.computeVolume(node)
 
 
-    def hasAttribute(self, node):
-        return self.attr_name in node.attributes.keys()
+    def computeArea(self, node):
+        self.area += len(node.cnps)
 
-
-class Area(Attribute):
-
-    def __init__(self, node: Node):
-        super().__init__('area', node)
-
-
-    def computeAttribute(self):
-        super().computeAttribute()
-        self.node.attributes[self.attr_name] += len(self.node.cnps)
-
-        if self.node.isRoot():
+        if node.isRoot():
             return
 
-        if not self.hasAttribute(self.node.parent):
-            self.node.parent.attributes[self.attr_name] = 0
-
-        self.node.parent.attributes[self.attr_name] += self.node.attributes[self.attr_name]
+        node.parent.attributes.area += self.area
 
 
-class Volume(Attribute):
+    def computeVolume(self, node):
+        self.volume += len(node.cnps) * node.level
 
-    def __init__(self, node: Node):
-        super().__init__('volume', node)
-
-
-    def computeAttribute(self):
-        super().computeAttribute()
-        self.node.attributes[self.attr_name] += len(self.node.cnps) * self.node.level
-
-        if self.node.isRoot():
+        if node.isRoot():
             return
 
-        if not self.hasAttribute(self.node.parent):
-            self.node.parent.attributes[self.attr_name] = 0
+        node.parent.attributes.volume += self.volume
 
-        self.node.parent.attributes[self.attr_name] += self.node.attributes[self.attr_name]
 
+    def __str__(self):
+        return (
+            f"Area: {self.area}\n"
+            f"Volume: {self.volume}"
+        )
