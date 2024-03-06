@@ -6,20 +6,16 @@ from .adjacency import *
 from .box import Box
 from .pixel_indexer import PixelIndexer
 from .image import Image
+from .union_find import UnionFind
 
 
 class ComponentTree:
 
     def __init__(self, f, adjacency):
         self.image = Image(f)
-
+        self.union_find = UnionFind(self.image.flatten.shape)
         self.adjacency = adjacency
         self.sorted_pixels = self.sortPixels()
-
-        # self.x_coord, self.y_coord = np.meshgrid(np.arange(self.width), np.arange(self.height))
-
-        # self.parent = np.arange(self.sorted_pixels.shape[0])
-        # self.zpar = np.full(self.sorted_pixels.shape, None)
 
 
     def sortPixels(self, sort='asc'):
@@ -32,34 +28,9 @@ class ComponentTree:
         return sorted_pixels
 
 
-    def findRoot(self, pixel):
-        # if self.zpar[pixel] == pixel:
-        #     return pixel
-        # else:
-        #     return self.findRoot(self.zpar[pixel])
-        path = []
-
-        while self.zpar[pixel] != pixel:
-            pixel = self.zpar[pixel]
-            path.append(pixel)
-
-        rep = pixel
-
-        for p in path:
-            self.zpar[p] = rep
-
-        return rep
-
-
     def computeTree(self):
-        self.parent = np.full(self.sorted_pixels.shape, None)
-        self.zpar = np.full(self.sorted_pixels.shape, None)
-
-        # print(f'parent: {self.parent}')
-        # print(f'zpar: {self.zpar}')
-
         for p_index in self.sorted_pixels:
-            self.parent[p_index] = self.zpar[p_index] = p_index
+            self.union_find.parent[p_index] = self.union_find.zpar[p_index] = p_index
 
             p_point = self.image.indexToCoord(p_index)
 
@@ -67,12 +38,8 @@ class ComponentTree:
                 if self.image.contains(q_point):
                     q_index = self.image.coordToIndex(q_point)
                     
-                    if self.zpar[q_index] != None:
-                        root = self.findRoot(q_index)
-
-                        if root != p_index:
-                            self.parent[root] = p_index
-                            self.zpar[root] = p_index
+                    if self.union_find.zpar[q_index] != None:
+                        self.union_find.union(p_index, q_index)
 
 
     def showParents(self):
@@ -92,7 +59,7 @@ class ComponentTree:
 
         for i in range(self.image.height):
             for j in range(self.image.width):
-                coord = self.image.indexToCoord(self.parent.reshape(self.image.shape)[i, j])
+                coord = self.image.indexToCoord(self.union_find.parent.reshape(self.image.shape)[i, j])
                 ax1.text(
                     j, i,
                     f'{imgABC[i, j]} -> {imgABC[coord.row, coord.col]}',

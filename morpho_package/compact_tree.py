@@ -7,6 +7,7 @@ from .component_tree import ComponentTree, UpperLevelSets, LowerLevelSets
 from .node import Node
 from .node_attributes import ComputeAttributes
 
+
 class CompactTree(ComponentTree):
 
     def __init__(self, f, adjacency):
@@ -20,15 +21,15 @@ class CompactTree(ComponentTree):
         self.nodes = {}
 
         for p in np.flip(self.sorted_pixels):
-            p_parent = self.parent[p]
-            p_grand_parent = self.parent[p_parent]
+            p_parent = self.union_find.parent[p]
+            p_grand_parent = self.union_find.parent[p_parent]
 
             p_point = self.image.indexToCoord(p)
             p_parent_point = self.image.indexToCoord(p_parent)
             p_grand_parent_point = self.image.indexToCoord(p_grand_parent)
 
             if self.image[p_grand_parent_point.row, p_grand_parent_point.col] == self.image[p_parent_point.row, p_parent_point.col]:
-                p_parent = self.parent[p] = p_grand_parent
+                p_parent = self.union_find.parent[p] = p_grand_parent
 
             if p == p_parent or self.image[p_point.row, p_point.col] != self.image[p_parent_point.row, p_parent_point.col]:
                 self.generateNode(p)
@@ -39,7 +40,7 @@ class CompactTree(ComponentTree):
     def generateNode(self, canonical_index):
         c_point = self.image.indexToCoord(canonical_index)
         level = self.image[c_point.row, c_point.col]
-        parent = self.parent[canonical_index]
+        parent = self.union_find.parent[canonical_index]
 
         if canonical_index == parent:
             self.nodes[canonical_index] = Node(level, canonical_index)
