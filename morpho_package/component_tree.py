@@ -5,18 +5,15 @@ from .point import Point
 from .adjacency import *
 from .box import Box
 from .pixel_indexer import PixelIndexer
+from .image import Image
 
 
 class ComponentTree:
+
     def __init__(self, f, adjacency):
-        self.image = f
+        self.image = Image(f)
+
         self.adjacency = adjacency
-
-        self.height = self.image.shape[0]
-        self.width = self.image.shape[1]
-
-        self.domain = Box(Point(0, 0), Point(self.height - 1, self.width - 1))
-        self.pixel_indexer = PixelIndexer(self.domain)
         self.sorted_pixels = self.sortPixels()
 
         # self.x_coord, self.y_coord = np.meshgrid(np.arange(self.width), np.arange(self.height))
@@ -26,7 +23,7 @@ class ComponentTree:
 
 
     def sortPixels(self, sort='asc'):
-        vector = self.image.flatten()
+        vector = self.image.flatten
         sorted_pixels = np.argsort(vector)
         
         if sort == 'desc':
@@ -64,11 +61,11 @@ class ComponentTree:
         for p_index in self.sorted_pixels:
             self.parent[p_index] = self.zpar[p_index] = p_index
 
-            p_point = self.pixel_indexer.indexToCoord(p_index)
+            p_point = self.image.indexToCoord(p_index)
 
             for q_point in self.adjacency.neighbours(p_point):
-                if self.domain.contains(q_point):
-                    q_index = self.pixel_indexer.coordToIndex(q_point)
+                if self.image.contains(q_point):
+                    q_index = self.image.coordToIndex(q_point)
                     
                     if self.zpar[q_index] != None:
                         root = self.findRoot(q_index)
@@ -93,9 +90,9 @@ class ComponentTree:
         ax1.get_xaxis().set_visible(False)
         ax1.get_yaxis().set_visible(False)
 
-        for i in range(self.height):
-            for j in range(self.width):
-                coord = self.pixel_indexer.indexToCoord(self.parent.reshape(self.image.shape)[i, j])
+        for i in range(self.image.height):
+            for j in range(self.image.width):
+                coord = self.image.indexToCoord(self.parent.reshape(self.image.shape)[i, j])
                 ax1.text(
                     j, i,
                     f'{imgABC[i, j]} -> {imgABC[coord.row, coord.col]}',

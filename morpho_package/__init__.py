@@ -6,3 +6,4 @@ from .component_tree import ComponentTree, UpperLevelSets, LowerLevelSets, showP
 from .compact_tree import CompactTree, MaxTree, MinTree
 from .node import Node
 from .node_attributes.compute_attributes import ComputeAttributes
+from .image import Image
