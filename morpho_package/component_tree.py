@@ -17,11 +17,14 @@ class ComponentTree:
         self.adjacency = adjacency
         self.sorted_pixels = self.sortPixels()
 
+        self.computeTree()
+        self.canonize()
+
 
     def sortPixels(self, sort='asc'):
         vector = self.image.flatten
         sorted_pixels = np.argsort(vector)
-        
+
         if sort == 'desc':
             sorted_pixels = np.flip(sorted_pixels)
 
@@ -40,6 +43,18 @@ class ComponentTree:
                     
                     if self.union_find.zpar[q_index] != None:
                         self.union_find.union(p_index, q_index)
+
+
+    def canonize(self):
+        for p in np.flip(self.sorted_pixels):
+            p_parent = self.union_find.parent[p]
+            p_grand_parent = self.union_find.parent[p_parent]
+
+            p_parent_point = self.image.indexToCoord(p_parent)
+            p_grand_parent_point = self.image.indexToCoord(p_grand_parent)
+
+            if self.image[p_grand_parent_point.row, p_grand_parent_point.col] == self.image[p_parent_point.row, p_parent_point.col]:
+                p_parent = self.union_find.parent[p] = p_grand_parent
 
 
     def showParents(self):
@@ -67,19 +82,6 @@ class ComponentTree:
                     horizontalalignment='center',
                     verticalalignment='center_baseline'
                 )
-
-
-class UpperLevelSets(ComponentTree):
-        
-    def sortPixels(self):
-        return super().sortPixels('desc')
-
-
-class LowerLevelSets(ComponentTree):
-    
-    def sortPixels(self):
-        return super().sortPixels('asc')
-
 
 
 def showParents(image, sorted_pixels, parent):
