@@ -1,14 +1,22 @@
 from .attributes import *
 
-
 class ComputeAttributes:
 
-    def __init__(self, nodes):
-        self.computeIncrementalAttributes(nodes)
+    def __init__(self, node):
+        self.computeIncrementalAttributes(node)
 
 
-    def computeIncrementalAttributes(self, nodes):
-        for node_key in nodes.__reversed__():
-            node = nodes[node_key]
-            node.computeAttributes()
+    # Percurso em profundidade (Empilhamento)
+    def computeIncrementalAttributes(self, node):
+        # Pré-ordem
+        node.preOrderProcess()
+
+        for children in node.childrens.values():
+
+            # Ordem
+            self.computeIncrementalAttributes(children)
+            children.inOrderProcess()
+            
+        # Pós-ordem
+        node.postOrderProcess()
 

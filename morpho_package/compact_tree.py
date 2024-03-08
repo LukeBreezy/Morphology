@@ -13,12 +13,12 @@ class CompactTree(ComponentTree):
     def __init__(self, f, adjacency):
         super().__init__(f, adjacency)
 
+        self.nodes = {}
         self.generateTree()
-        ComputeAttributes(self.nodes)
+        ComputeAttributes(self.root)
 
 
     def generateTree(self):
-        self.nodes = {}
         for p in np.flip(self.sorted_pixels):
             p_parent = self.union_find.parent[p]
 
@@ -27,10 +27,14 @@ class CompactTree(ComponentTree):
 
             if p == p_parent:
                 self.generateNode(p, True)
+
             elif self.image[p_point.row, p_point.col] != self.image[p_parent_point.row, p_parent_point.col]:
                 self.generateNode(p, False)
+
             else:
                 self.nodes[p_parent].addCnp(p)
+                p_point = self.image.indexToCoord(p)
+                self.nodes[p_parent].setLimits(p_point)
 
 
     def generateNode(self, canonical_index, is_root):
@@ -40,9 +44,13 @@ class CompactTree(ComponentTree):
 
         if is_root:
             self.nodes[canonical_index] = self.root = Node(level, canonical_index)
+
         else:
             self.nodes[canonical_index] = Node(level, canonical_index, self.nodes[c_parent])
             self.nodes[c_parent].addChildren(self.nodes[canonical_index])
+
+        self.nodes[canonical_index].top_left = self.image.indexToCoord(canonical_index)
+        self.nodes[canonical_index].bottom_right = self.image.indexToCoord(canonical_index)
 
 
     def displayTree(self):
