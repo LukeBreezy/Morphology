@@ -9,10 +9,13 @@ class Node:
         self.childrens = {}                                     # Children Nodes
 
         self.level = level                                      # Level / Intensity
-        self.cnps = [rep]                                       # Compact Node Pixels
+        self.cnps = []                                          # Compact Node Pixels
         self.attributes = Attributes()                          # Node Attributes
         self.top_left = None                                    # Top Left
         self.bottom_right = None                                # Bottom Right
+
+        if not self.isRoot():
+            self.parent.addChildren(self)
 
 
     def addCnp(self, pixel):
@@ -46,8 +49,13 @@ class Node:
 
 
     def setLimits(self, pixel):
-        self.setTopLeft(pixel)
-        self.setBottomRight(pixel)
+        if not isinstance(self.top_left, Point) and not isinstance(self.bottom_right, Point):
+            self.top_left = pixel
+            self.bottom_right = pixel
+
+        else:
+            self.setTopLeft(pixel)
+            self.setBottomRight(pixel)
 
 
     def isRoot(self):

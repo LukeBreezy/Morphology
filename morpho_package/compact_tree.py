@@ -14,6 +14,8 @@ class CompactTree(ComponentTree):
         super().__init__(f, adjacency)
 
         self.nodes = {}
+        self.index_to_node = np.full(self.sorted_pixels.shape, None)
+
         self.generateTree()
         ComputeAttributes(self.root)
 
@@ -25,16 +27,16 @@ class CompactTree(ComponentTree):
             p_point = self.image.indexToCoord(p)
             p_parent_point = self.image.indexToCoord(p_parent)
 
-            if p == p_parent:
-                self.generateNode(p, True)
-
-            elif self.image[p_point.row, p_point.col] != self.image[p_parent_point.row, p_parent_point.col]:
-                self.generateNode(p, False)
+            if p == p_parent or self.image[p_point.row, p_point.col] != self.image[p_parent_point.row, p_parent_point.col]:
+                self.generateNode(p, p == p_parent)
+                node = self.nodes[p]
 
             else:
-                self.nodes[p_parent].addCnp(p)
-                p_point = self.image.indexToCoord(p)
-                self.nodes[p_parent].setLimits(p_point)
+                node = self.nodes[p_parent]
+
+            node.addCnp(p)
+            node.setLimits(p_point)
+            self.index_to_node[p] = node
 
 
     def generateNode(self, canonical_index, is_root):
@@ -47,16 +49,13 @@ class CompactTree(ComponentTree):
 
         else:
             self.nodes[canonical_index] = Node(level, canonical_index, self.nodes[c_parent])
-            self.nodes[c_parent].addChildren(self.nodes[canonical_index])
-
-        self.nodes[canonical_index].top_left = self.image.indexToCoord(canonical_index)
-        self.nodes[canonical_index].bottom_right = self.image.indexToCoord(canonical_index)
 
 
     def displayTree(self):
         pretty_tree = PrettyPrintTree(
             lambda node: node.childrens.values(),
-            lambda node: node.getInfo()
+            lambda node: node.getInfo(),
+            max_depth=20
         )
         pretty_tree(self.root)
 

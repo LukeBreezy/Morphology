@@ -8,3 +8,4 @@ from .node import Node
 from .node_attributes.compute_attributes import ComputeAttributes
 from .image import Image
 from .union_find import UnionFind
+from .pruning import Pruning
