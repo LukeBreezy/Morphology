@@ -6,6 +6,7 @@ from .component_tree import ComponentTree, showParents
 from .compact_tree import CompactTree, MaxTree, MinTree
 from .node import Node
 from .node_attributes.compute_attributes import ComputeAttributes
+from .node_attributes.attributes import Attributes
 from .image import Image
 from .union_find import UnionFind
 from .pruning import Pruning

@@ -1,62 +1,35 @@
+from ..point import Point
+from ..node import Node
+from ..image import Image
+
 class Attributes:
 
     def __init__(self):
         self.area = None
         self.volume = None
+        self.top_left = None
+        self.bottom_right = None
         self.height = None
         self.width = None
 
 
     # Pré-ordem
-    def preOrderProcess(self, node):
-        self.preOrderArea(node)
-        self.preOrderVolume(node)
-
-
-    def preOrderArea(self, node):
-        self.area = len(node.cnps)
-
-
-    def preOrderVolume(self, node):
-        self.volume = len(node.cnps) * node.level
+    def preOrderProcess(self, node: Node, image: Image):
+        self.area = Area.preOrderArea(node)
+        self.volume = Volume.preOrderVolume(node)
+        self.top_left, self.bottom_right = Limits.preOrderLimits(node, image)
 
 
     # Ordem
-    def inOrderProcess(self, node):
-        self.inOrderArea(node)
-        self.inOrderVolume(node)
-        self.inOrderTopLef(node)
-        self.inOrderBottomRigh(node)
-
-
-    def inOrderArea(self, node):
-        node.parent.attributes.area += self.area
-
-
-    def inOrderVolume(self, node):
-        node.parent.attributes.volume += self.volume
-
-
-    def inOrderTopLef(self, node):
-        node.parent.setTopLeft(node.top_left)
-
-    
-    def inOrderBottomRigh(self, node):
-        node.parent.setBottomRight(node.bottom_right)
+    def inOrderProcess(self, image: Image, parent_attribute):
+        Area.inOrderArea(parent_attribute, self.area)
+        Volume.inOrderVolume(parent_attribute, self.volume)
+        Limits.inOrderLimits(parent_attribute, self.top_left, self.bottom_right)
 
 
     # Pós-Ordem
-    def postOrderProcess(self, node):
-        self.postOrderHeight(node)
-        self.postOrderWidth(node)
-
-    
-    def postOrderHeight(self, node):
-        self.height = node.bottom_right.row - node.top_left.row + 1
-
-
-    def postOrderWidth(self, node):
-        self.width = node.bottom_right.col - node.top_left.col + 1
+    def postOrderProcess(self):
+        self.height, self.width = Dimensions.postOrderDimensions(self.top_left, self.bottom_right)
 
 
     def __str__(self):
@@ -64,5 +37,90 @@ class Attributes:
             f"Area: {self.area}\n"
             f"Volume: {self.volume}\n"
             f"Height: {self.height}\n"
-            f"Width: {self.width}"
+            f"Width: {self.width}\n"
+            f"TL: {self.top_left}\n"
+            f"BR: {self.bottom_right}"
         )
+
+
+class Area:
+
+    @staticmethod
+    def preOrderArea(node):
+        return len(node.cnps)
+
+
+    @staticmethod
+    def inOrderArea(parent_attribute, area):
+        parent_attribute.area += area
+
+
+class Volume:
+
+    @staticmethod
+    def preOrderVolume(node):
+        return len(node.cnps) * node.level
+
+
+    @staticmethod
+    def inOrderVolume(parent_attribute, volume):
+        parent_attribute.volume += volume
+
+
+class Limits:
+
+    @staticmethod
+    def setTopLeft(pixel1: Point, pixel2: Point):
+        return Point(
+            pixel1.row if pixel1.row < pixel2.row else pixel2.row,
+            pixel1.col if pixel1.col < pixel2.col else pixel2.col
+        )
+
+
+    @staticmethod
+    def setBottomRight(pixel1: Point, pixel2: Point):
+        return Point(
+            pixel1.row if pixel1.row > pixel2.row else pixel2.row,
+            pixel1.col if pixel1.col > pixel2.col else pixel2.col
+        )
+
+
+    # Pré-Ordem
+    @staticmethod
+    def preOrderLimits(node: Node, image: Image):
+        top_left = image.indexToCoord(node.rep)
+        bottom_right = image.indexToCoord(node.rep)
+        
+        for p in node.cnps:
+            pixel = image.indexToCoord(p)
+            top_left = Limits.setTopLeft(top_left, pixel)
+            bottom_right = Limits.setBottomRight(bottom_right, pixel)
+            
+        return (top_left, bottom_right)
+
+
+    # Ordem
+    @staticmethod
+    def inOrderLimits(parent_attributes: Attributes, top_left: Point, bottom_right: Point):
+        parent_attributes.top_left = Limits.setTopLeft(parent_attributes.top_left, top_left)
+        parent_attributes.bottom_right = Limits.setBottomRight(parent_attributes.bottom_right, bottom_right)
+
+
+class Dimensions:
+
+    # Pós-Ordem
+    @staticmethod
+    def postOrderDimensions(top_left: Point, bottom_right: Point):
+        height = Dimensions.postOrderHeight(top_left, bottom_right)
+        width = Dimensions.postOrderWidth(top_left, bottom_right)
+        return (height, width)
+
+
+    @staticmethod
+    def postOrderHeight(top_left: Point, bottom_right: Point):
+        return bottom_right.row - top_left.row + 1
+
+
+    @staticmethod
+    def postOrderWidth(top_left: Point, bottom_right: Point):
+        return bottom_right.col - top_left.col + 1
