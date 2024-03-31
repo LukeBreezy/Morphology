@@ -9,4 +9,4 @@ from .node_attributes.compute_attributes import ComputeAttributes
 from .node_attributes.attributes import Attributes
 from .image import Image
 from .union_find import UnionFind
-from .pruning import Pruning
+from .filtering import Pruning, Removal

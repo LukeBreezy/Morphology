@@ -11,6 +11,8 @@ class Attributes:
         self.bottom_right = None
         self.height = None
         self.width = None
+        self.mean = None
+        self.variance = None
 
 
     # Pré-ordem
@@ -32,6 +34,12 @@ class Attributes:
         self.height, self.width = Dimensions.postOrderDimensions(self.top_left, self.bottom_right)
 
 
+    # Atributos não incrementais
+    def nonIncrementalProcess(self, node: Node):
+        self.mean = Mean.computeMean(self.volume, self.area)
+        self.variance = Variance.computeVariance(node, self.area, self.mean)
+
+
     def __str__(self):
         return (
             f"Area: {self.area}\n"
@@ -39,7 +47,9 @@ class Attributes:
             f"Height: {self.height}\n"
             f"Width: {self.width}\n"
             f"TL: {self.top_left}\n"
-            f"BR: {self.bottom_right}"
+            f"BR: {self.bottom_right}\n"
+            f"Mean: {self.mean}\n"
+            f"Variance: {self.variance}"
         )
 
 
@@ -124,3 +134,27 @@ class Dimensions:
     @staticmethod
     def postOrderWidth(top_left: Point, bottom_right: Point):
         return bottom_right.col - top_left.col + 1
+
+
+class Mean:
+
+    @staticmethod
+    def computeMean(volume: int, area: int) -> float:
+        return volume / area
+
+
+class Variance:
+
+    @staticmethod
+    def computeVariance(node: Node, area: int, mean: float) -> float:
+        aux = 0
+        queue = [node]
+
+        while len(queue) != 0:
+            node = queue.pop(0)
+            for _ in node.cnps:
+                aux += (node.level - mean) ** 2
+
+            queue += node.children
+
+        return aux / area

@@ -4,6 +4,7 @@ class ComputeAttributes:
 
     def __init__(self, compact_tree, attr_list):
         self.computeIncrementalAttributes(compact_tree.root, compact_tree.image, attr_list)
+        self.computeNonIncrementalAttributes(compact_tree.root, attr_list)
 
 
     # Percurso em profundidade (Empilhamento)
@@ -22,3 +23,13 @@ class ComputeAttributes:
 
         # Pós-ordem
         attribute_obj.postOrderProcess()
+
+
+    # Percurso em largura (Enfileiramento)
+    def computeNonIncrementalAttributes(self, node, attr_list):
+        attribute_obj = attr_list[node.index]
+
+        attribute_obj.nonIncrementalProcess(node)
+
+        for child in node.children:
+            self.computeNonIncrementalAttributes(child, attr_list)
